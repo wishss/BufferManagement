@@ -17,10 +17,9 @@ void producer()
         WaitForSingleObject(empty, INFINITE);
 
         // 积魂 肺流
-        mtx.lock();
+        std::unique_lock<std::mutex> lock(mtx);
         buffer.push(i);
         std::cout << "Produced: " << i << std::endl;
-        mtx.unlock();
 
         ReleaseSemaphore(full, 1, NULL);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -35,11 +34,10 @@ void consumer()
         WaitForSingleObject(full, INFINITE);
 
         // 家厚 肺流
-        mtx.lock();
+        std::unique_lock<std::mutex> lock(mtx);
         int data = buffer.front();
         buffer.pop();
         std::cout << "Consumed: " << data << std::endl;
-        mtx.unlock();
 
         ReleaseSemaphore(empty, 1, NULL);
         std::this_thread::sleep_for(std::chrono::milliseconds(150));
